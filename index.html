@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Streaming Sederhana</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>Koleksi Video Terbaru</h1>
+    <p>Streaming langsung dari galeri otomatis</p>
+  </header>
+
+  <main class="container">
+    <div id="videoList" class="video-grid">
+      <!-- Daftar video akan dimuat otomatis lewat JavaScript -->
+      <p>Memuat video...</p>
+    </div>
+  </main>
+
+  <script>
+    // Ambil data dari file videos.json
+    fetch('videos.json')
+      .then(response => response.json())
+      .then(data => {
+        const container = document.getElementById('videoList');
+        container.innerHTML = ''; // Kosongkan teks loading
+
+        if (data.length === 0) {
+          container.innerHTML = '<p>Belum ada video.</p>';
+          return;
+        }
+
+        // Loop setiap video di database
+        data.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'video-card';
+          
+          card.innerHTML = `
+            <h3>${item.title}</h3>
+            <div class="player-wrapper">
+              <video controls width="100%">
+                <source src="${item.videoUrl}" type="video/mp4">
+                Browser Anda tidak mendukung pemutar video.
+              </video>
+            </div>
+            <!-- Tombol Link Affiliate Shopee -->
+            <a href="${item.affiliateUrl}" target="_blank" class="affiliate-btn">
+              🛍️ Cek Produk Terkait di Shopee
+            </a>
+          `;
+          container.appendChild(card);
+        });
+      })
+      .catch(error => {
+        console.error('Gagal memuat video:', error);
+        document.getElementById('videoList').innerHTML = '<p>Gagal memuat data video.</p>';
+      });
+  </script>
+
+</body>
+</html>
