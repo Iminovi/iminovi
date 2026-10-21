@@ -5,6 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Video Streaming Sederhana</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .video-card {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .player-wrapper {
+      position: relative;
+      padding-bottom: 56.25%; /* Rasio aspek 16:9 */
+      height: 0;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    .player-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .affiliate-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #ee4d2d;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+  </style>
 </head>
 <body>
 
@@ -41,15 +74,10 @@
           card.innerHTML = `
             <h3>${item.title}</h3>
             <div class="player-wrapper">
-              <video controls width="100%">
-                <source src="${item.videoUrl}" type="video/mp4">
-                Browser Anda tidak mendukung pemutar video.
-              </video>
+              <iframe src="${item.videoUrl}" scrolling="no" allowfullscreen="true"></iframe>
             </div>
-            <!-- Tombol Link Affiliate Shopee -->
-            <a href="${item.affiliateUrl}" target="_blank" class="affiliate-btn">
-              🛍️ Cek Produk Terkait di Shopee
-            </a>
+            <!-- Tombol Link Affiliate Shopee (Opsional) -->
+            ${item.affiliateUrl ? `<a href="${item.affiliateUrl}" target="_blank" class="affiliate-btn">🛍️ Cek Produk Terkait di Shopee</a>` : ''}
           `;
           container.appendChild(card);
         });
