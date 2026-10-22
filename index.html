@@ -4,207 +4,312 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Koleksi Video Streaming</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="description" content="Streaming video cepat dan lengkap, diperbarui otomatis. Cari judul atau pilih kategori favoritmu.">
   <meta name="monetag" content="7ef44d266fff2a2a4d273dfcffd95e36">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #f4f6f9; color: #333; padding-bottom: 40px; }
-    
-    header {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      color: white;
-      text-align: center;
-      padding: 30px 15px;
-      margin-bottom: 25px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    :root {
+      --bg: #0f1530;
+      --surface: #19213f;
+      --surface-2: #232d52;
+      --line: #2f3a66;
+      --text: #eef2fb;
+      --muted: #9ba6c7;
+      --accent: #5b8def;
+      --accent-ink: #0a1230;
+      --gold: #ffc857;
+      --radius: 14px;
     }
-    header h1 { font-size: 2rem; margin-bottom: 5px; }
-    header p { opacity: 0.9; font-size: 0.95rem; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    a, button, input { font: inherit; color: inherit; }
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
 
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 15px; }
-
-    /* Bar Pencarian & Kategori */
-    .filter-section {
+    /* Hero */
+    .hero {
+      padding: 64px 0 40px;
+      background:
+        radial-gradient(900px 340px at 15% -10%, rgba(91,141,239,.35), transparent 70%),
+        radial-gradient(600px 260px at 95% 0%, rgba(255,200,87,.12), transparent 70%);
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5.5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      max-width: 18ch;
+    }
+    .hero p { margin-top: 14px; color: var(--muted); max-width: 46ch; font-size: 1.05rem; }
+    .search {
+      margin-top: 28px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 25px;
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      align-items: center;
+      gap: 10px;
+      max-width: 560px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 8px 6px 20px;
+      transition: border-color .2s;
     }
-    .search-input {
-      flex: 1 1 250px;
-      padding: 10px 15px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+    .search:focus-within { border-color: var(--accent); }
+    .search svg { flex: none; opacity: .7; }
+    .search input {
+      flex: 1;
+      min-width: 0;
+      background: none;
+      border: 0;
       outline: none;
-      font-size: 0.95rem;
+      padding: 10px 0;
+      font-size: 1rem;
     }
-    .search-input:focus { border-color: #2a5298; }
-    .category-select {
-      padding: 10px 15px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      background: white;
-      outline: none;
-      font-size: 0.95rem;
+    .search input::placeholder { color: var(--muted); }
+    .search button {
+      border: 0;
+      background: var(--surface-2);
+      width: 36px; height: 36px;
+      border-radius: 50%;
       cursor: pointer;
+      display: none;
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+    .search.has-value button { display: block; }
+
+    /* Filter bar */
+    .bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(15,21,48,.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .bar-inner { display: flex; align-items: center; gap: 16px; padding: 12px 20px; }
+    .chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; flex: 1; padding: 2px; }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip {
+      flex: none;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      padding: 7px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 500;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .chip:hover { color: var(--text); border-color: var(--accent); }
+    .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+    .category-select {
+      flex: 0 1 280px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 18px;
+      font-size: .95rem;
+      cursor: pointer;
+      outline: none;
+    }
+    .category-select:focus-visible { border-color: var(--accent); }
+    .category-select option { background: var(--surface); color: var(--text); }
+    .count { flex: none; margin-left: auto; color: var(--muted); font-size: .88rem; }
+
+    /* Grid */
+    main { padding: 28px 0 60px; min-height: 60vh; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 22px; }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+    .player { position: relative; aspect-ratio: 16 / 9; background: #000; }
+    .player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .poster {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      border: 0; cursor: pointer; padding: 0;
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--surface-2), #101a3a) center / cover no-repeat;
+    }
+    .play {
+      width: 62px; height: 62px; border-radius: 50%;
+      background: var(--gold); color: var(--accent-ink);
+      display: grid; place-items: center;
+      box-shadow: 0 6px 24px rgba(0,0,0,.45);
+      transition: transform .2s;
+    }
+    .poster:hover .play { transform: scale(1.1); }
+    .info { padding: 14px 16px 16px; }
+    .tag { font-size: .78rem; font-weight: 600; color: var(--gold); }
+    .title {
+      margin-top: 4px;
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
-    /* Grid Video */
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
+    /* Skeleton & kosong */
+    .skeleton { height: 262px; border-radius: var(--radius); background: linear-gradient(100deg, var(--surface) 30%, var(--surface-2) 50%, var(--surface) 70%) 0 0 / 200% 100%; animation: shimmer 1.4s linear infinite; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .empty { grid-column: 1 / -1; text-align: center; padding: 60px 16px; color: var(--muted); }
+    .empty strong { display: block; color: var(--text); font-size: 1.15rem; margin-bottom: 6px; }
+    .empty button { margin-top: 18px; border: 0; background: var(--accent); color: var(--accent-ink); font-weight: 600; padding: 10px 22px; border-radius: 999px; cursor: pointer; }
+
+    footer { border-top: 1px solid var(--line); padding: 26px 0; text-align: center; color: var(--muted); font-size: .88rem; }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
     }
-    .video-card {
-      background: white;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .video-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.12);
-    }
-    .video-info { padding: 15px; }
-    .category-badge {
-      display: inline-block;
-      background: #e1f0ff;
-      color: #0066cc;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 4px;
-      margin-bottom: 8px;
-      text-transform: uppercase;
-    }
-    .video-title { font-size: 1.05rem; font-weight: 600; color: #222; margin-bottom: 10px; line-height: 1.4; }
-    
-    .player-wrapper {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      background: #000;
-    }
-    .player-wrapper iframe {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      border: 0;
-    }
-    .no-data {
-      text-align: center;
-      grid-column: 1 / -1;
-      padding: 40px;
-      color: #777;
+    @media (max-width: 560px) {
+      .hero { padding: 44px 0 28px; }
+      .count { display: none; }
     }
   </style>
-  <meta name="monetag" content="7ef44d266fff2a2a4d273dfcffd95e36">
 </head>
 <body>
 
-  <header>
-    <h1>Koleksi Video Streaming</h1>
-    <p>Streaming cepat, lengkap, dan diperbarui otomatis</p>
+  <header class="hero">
+    <div class="container">
+      <h1>Nonton dracin favoritmu, lengkap disini</h1>
+      <p>Koleksi diperbarui otomatis. Cari judul atau pilih kategori di bawah.</p>
+      <div class="search" id="searchBox" role="search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="searchInput" placeholder="Cari judul video" aria-label="Cari judul video" autocomplete="off">
+        <button type="button" id="clearBtn" aria-label="Hapus pencarian">×</button>
+      </div>
+    </div>
   </header>
 
-  <main class="container">
-    <!-- Filter Section -->
-    <div class="filter-section">
-      <input type="text" id="searchInput" class="search-input" placeholder="🔍 Cari judul video...">
-      <select id="categorySelect" class="category-select">
+  <nav class="bar" aria-label="Filter kategori">
+    <div class="container bar-inner">
+      <select id="categorySelect" class="category-select" aria-label="Pilih kategori">
         <option value="ALL">Semua Kategori</option>
       </select>
+      <span class="count" id="count" aria-live="polite"></span>
     </div>
+  </nav>
 
-    <!-- Video Grid -->
-    <div id="videoList" class="video-grid">
-      <div class="no-data"><p>Memuat koleksi video...</p></div>
+  <main class="container">
+    <div id="videoList" class="grid" aria-busy="true">
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
     </div>
   </main>
 
+  <footer>
+    <div class="container">Koleksi video diperbarui secara berkala.</div>
+  </footer>
+
   <script>
     let allVideos = [];
+    let activeCategory = 'ALL';
 
-    // Ambil data dari videos.json
+    const $list = document.getElementById('videoList');
+    const $select = document.getElementById('categorySelect');
+    const $count = document.getElementById('count');
+    const $input = document.getElementById('searchInput');
+    const $box = document.getElementById('searchBox');
+
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
     fetch('videos.json')
-      .then(response => response.json())
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(data => {
-        allVideos = data;
-        populateCategories(data);
-        renderVideos(data);
+        allVideos = Array.isArray(data) ? data : [];
+        buildChips();
+        applyFilter();
       })
-      .catch(error => {
-        console.error('Gagal memuat video:', error);
-        document.getElementById('videoList').innerHTML = '<div class="no-data"><p>Gagal memuat data video.</p></div>';
+      .catch(err => {
+        console.error('Gagal memuat video:', err);
+        $list.setAttribute('aria-busy', 'false');
+        $list.innerHTML = '<div class="empty"><strong>Video belum bisa dimuat</strong>Periksa koneksi internet, lalu coba lagi.<br><button onclick="location.reload()">Muat ulang</button></div>';
       });
 
-    // Isi daftar dropdown kategori secara otomatis dari data JSON
-    function populateCategories(videos) {
-      const categorySelect = document.getElementById('categorySelect');
-      const categories = new Set();
-
-      videos.forEach(v => {
-        if (v.category) categories.add(v.category.trim());
-      });
-
-      categories.forEach(cat => {
-        const option = document.createElement('option');
-        option.value = cat;
-        option.textContent = cat;
-        categorySelect.appendChild(option);
+    function buildChips() {
+      const cats = [...new Set(allVideos.map(v => (v.category || '').trim()).filter(Boolean))].sort();
+      cats.forEach(cat => {
+        const o = document.createElement('option');
+        o.value = cat;
+        o.textContent = cat;
+        $select.appendChild(o);
       });
     }
 
-    // Tampilkan daftar video sesuai filter
-    function renderVideos(videos) {
-      const container = document.getElementById('videoList');
-      container.innerHTML = '';
+    function applyFilter() {
+      const q = $input.value.trim().toLowerCase();
+      const result = allVideos.filter(v =>
+        (v.title || '').toLowerCase().includes(q) &&
+        (activeCategory === 'ALL' || (v.category || '').trim() === activeCategory)
+      );
+      render(result);
+    }
 
-      if (videos.length === 0) {
-        container.innerHTML = '<div class="no-data"><p>Tidak ada video yang ditemukan.</p></div>';
+    function render(videos) {
+      $list.setAttribute('aria-busy', 'false');
+      $count.textContent = videos.length + ' video';
+
+      if (!videos.length) {
+        $list.innerHTML = '<div class="empty"><strong>Video tidak ditemukan</strong>Coba kata kunci lain atau tampilkan semua kategori.<br><button id="resetBtn">Reset pencarian</button></div>';
+        document.getElementById('resetBtn').onclick = resetAll;
         return;
       }
 
-      videos.forEach(item => {
-        const categoryName = item.category || 'Umum';
-        const card = document.createElement('div');
-        card.className = 'video-card';
-        
-        card.innerHTML = `
-          <div class="player-wrapper">
-            <iframe src="${item.videoUrl}" scrolling="no" allowfullscreen="true"></iframe>
-          </div>
-          <div class="video-info">
-            <span class="category-badge">${categoryName}</span>
-            <h3 class="video-title">${item.title}</h3>
-          </div>
-        `;
-        container.appendChild(card);
+      $list.innerHTML = videos.map((v, i) => {
+        const thumb = v.thumbnail || v.thumb || v.poster || '';
+        const bg = thumb ? ` style="background-image:url('${esc(thumb)}')"` : '';
+        return `
+          <article class="card">
+            <div class="player">
+              <button class="poster" type="button" data-i="${i}"${bg} aria-label="Putar: ${esc(v.title)}">
+                <span class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
+              </button>
+            </div>
+            <div class="info">
+              <span class="tag">${esc((v.category || 'Umum').trim())}</span>
+              <h3 class="title">${esc(v.title)}</h3>
+            </div>
+          </article>`;
+      }).join('');
+
+      // Player baru dimuat saat diklik, supaya halaman ringan
+      $list.querySelectorAll('.poster').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const video = videos[btn.dataset.i];
+          const f = document.createElement('iframe');
+          f.src = video.videoUrl;
+          f.title = video.title || 'Video';
+          f.allowFullscreen = true;
+          f.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
+          f.setAttribute('scrolling', 'no');
+          btn.replaceWith(f);
+        });
       });
     }
 
-    // Fungsi Filter berdasarkan kata kunci & kategori
-    function filterVideos() {
-      const searchKeyword = document.getElementById('searchInput').value.toLowerCase();
-      const selectedCategory = document.getElementById('categorySelect').value;
-
-      const filtered = allVideos.filter(video => {
-        const matchesSearch = video.title.toLowerCase().includes(searchKeyword);
-        const matchesCategory = (selectedCategory === 'ALL') || (video.category && video.category.trim() === selectedCategory);
-        return matchesSearch && matchesCategory;
-      });
-
-      renderVideos(filtered);
+    function resetAll() {
+      $input.value = '';
+      $box.classList.remove('has-value');
+      activeCategory = 'ALL';
+      $select.value = 'ALL';
+      applyFilter();
     }
 
-    // Event Listener untuk input & dropdown
-    document.getElementById('searchInput').addEventListener('input', filterVideos);
-    document.getElementById('categorySelect').addEventListener('change', filterVideos);
+    $input.addEventListener('input', () => {
+      $box.classList.toggle('has-value', $input.value.length > 0);
+      applyFilter();
+    });
+    $select.addEventListener('change', () => { activeCategory = $select.value; applyFilter(); });
+    document.getElementById('clearBtn').addEventListener('click', () => { $input.value = ''; $box.classList.remove('has-value'); $input.focus(); applyFilter(); });
   </script>
 
 </body>
