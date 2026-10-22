@@ -130,8 +130,24 @@
     main { padding: 28px 0 60px; min-height: 60vh; }
     .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 22px; }
     .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
-    .player { position: relative; aspect-ratio: 16 / 9; background: #000; }
-    .player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .player-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 75%; /* Rasio 4:3 agar lebih tinggi untuk menampung Doodstream */
+      min-height: 280px;   /* Tinggi minimal agar kontrol player Doodstream tidak terpotong */
+      height: 0;
+      background: #000;
+      border-radius: 8px 8px 0 0;
+      overflow: hidden;
+    }
+    .player-wrapper iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
     .poster {
       position: absolute; inset: 0; width: 100%; height: 100%;
       border: 0; cursor: pointer; padding: 0;
@@ -160,7 +176,7 @@
     }
 
     /* Skeleton & kosong */
-    .skeleton { height: 262px; border-radius: var(--radius); background: linear-gradient(100deg, var(--surface) 30%, var(--surface-2) 50%, var(--surface) 70%) 0 0 / 200% 100%; animation: shimmer 1.4s linear infinite; }
+    .skeleton { height: 360px; border-radius: var(--radius); background: linear-gradient(100deg, var(--surface) 30%, var(--surface-2) 50%, var(--surface) 70%) 0 0 / 200% 100%; animation: shimmer 1.4s linear infinite; }
     @keyframes shimmer { to { background-position: -200% 0; } }
     .empty { grid-column: 1 / -1; text-align: center; padding: 60px 16px; color: var(--muted); }
     .empty strong { display: block; color: var(--text); font-size: 1.15rem; margin-bottom: 6px; }
@@ -269,7 +285,7 @@
         const bg = thumb ? ` style="background-image:url('${esc(thumb)}')"` : '';
         return `
           <article class="card">
-            <div class="player">
+            <div class="player-wrapper">
               <button class="poster" type="button" data-i="${i}"${bg} aria-label="Putar: ${esc(v.title)}">
                 <span class="play"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>
               </button>
