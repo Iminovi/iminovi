@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, MessageHandler, filters
 
-# Muat variabel dari file .env
 load_dotenv()
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -29,8 +28,8 @@ HEADERS = {
 }
 
 
-def update_github_videos(title, video_url):
-  """Fungsi untuk menambahkan data video dengan link Doodstream ke GitHub"""
+def update_github_videos(title, video_url, category):
+  """Fungsi untuk menambahkan data video dengan kategori ke GitHub"""
   try:
     response = requests.get(GITHUB_URL, headers=HEADERS)
 
@@ -50,11 +49,12 @@ def update_github_videos(title, video_url):
     elif response.status_code == 404:
       current_videos = []
 
-    # Masukkan Judul dan Link Doodstream ke dalam database
+    # Masukkan Judul, Link, dan Kategori ke dalam database
     new_entry = {
         "title": title.strip(),
         "videoUrl": video_url.strip(),
-        "affiliateUrl": "",  # Bisa diisi link Shopee jika ada nanti
+        "category": category.strip() if category else "Umum",
+        "affiliateUrl": "",
     }
     current_videos.append(new_entry)
 
@@ -64,7 +64,7 @@ def update_github_videos(title, video_url):
     )
 
     payload = {
-        "message": f"Tambah video Doodstream: {title} via Telegram Bot",
+        "message": f"Tambah video [{category}]: {title} via Telegram Bot",
         "content": encoded_content,
     }
     if sha:
@@ -73,7 +73,7 @@ def update_github_videos(title, video_url):
     put_response = requests.put(GITHUB_URL, headers=HEADERS, json=payload)
 
     if put_response.status_code in [200, 201]:
-      return "Sukses! Data video Doodstream berhasil ditambahkan ke GitHub."
+      return "Sukses! Data video berhasil ditambahkan ke GitHub."
     else:
       return f"Gagal menyimpan ke GitHub: {put_response.text}"
 
@@ -82,36 +82,31 @@ def update_github_videos(title, video_url):
 
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
-  """Menerima pesan teks dengan format: Judul | LinkVideo"""
   text_pesan = update.message.text
   user_name = update.message.from_user.first_name
 
-  # Validasi apakah pesan mengandung pemisah '|'
   if "|" not in text_pesan:
     await update.message.reply_text(
-        "Format salah! Gunakan format:\n`Judul Video | Link Doodstream`",
+        "Format salah! Gunakan format:\n`Judul Video | Link Doodstream | Kategori (opsional)`",
         parse_mode="Markdown",
     )
     return
 
-  # Pisahkan judul dan link
-  parts = text_pesan.split("|", 1)
+  parts = text_pesan.split("|")
   title = parts[0]
   video_url = parts[1]
+  category = parts[2] if len(parts) > 2 else "Umum"
 
   await update.message.reply_text(
-      f"Halo {user_name}, memproses '{title.strip()}' ke GitHub..."
+      f"Halo {user_name}, memproses '{title.strip()}' kategori '{category.strip()}'..."
   )
 
-  hasil = update_github_videos(title, video_url)
+  hasil = update_github_videos(title, video_url, category)
   await update.message.reply_text(hasil)
 
 
 if __name__ == "__main__":
   app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
-
-  # Bot mendengarkan pesan teks biasa
   app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_text))
-
-  print("Bot Doodstream siap digunakan... Tekan Ctrl+C untuk berhenti.")
+  print("Bot siap... Tekan Ctrl+C untuk berhenti.")
   app.run_polling()
