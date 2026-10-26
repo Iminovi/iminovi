@@ -114,7 +114,7 @@ def webhook():
     )
 
     hasil = update_github_videos(title, video_url, category)
-    bot.send_message(chat_id=chat_id, text=hasil)
+    await bot.send_message(chat_id=chat_id, text=hasil)
 
   return "OK", 200
 
