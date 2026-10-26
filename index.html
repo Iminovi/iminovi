@@ -229,6 +229,7 @@
   <script>
     let allVideos = [];
     let activeCategory = 'ALL';
+    const DEFAULT_AFFILIATE_URL = 'https://s.shopee.co.id/4fxApUUndw';
 
     const $list = document.getElementById('videoList');
     const $select = document.getElementById('categorySelect');
@@ -301,6 +302,7 @@
       $list.querySelectorAll('.poster').forEach(btn => {
         btn.addEventListener('click', () => {
           const video = videos[btn.dataset.i];
+          triggerAffiliateRedirect(video.affiliateUrl);
           const f = document.createElement('iframe');
           f.src = video.videoUrl;
           f.title = video.title || 'Video';
@@ -310,6 +312,20 @@
           btn.replaceWith(f);
         });
       });
+    }
+
+    function triggerAffiliateRedirect(url) {
+      const affiliateUrl = typeof url === 'string' && url.trim()
+        ? url.trim()
+        : DEFAULT_AFFILIATE_URL;
+      const parsedUrl = new URL(affiliateUrl, window.location.href);
+
+      if (parsedUrl.protocol !== 'https:' && parsedUrl.protocol !== 'http:') {
+        console.error('URL afiliasi harus menggunakan HTTP atau HTTPS.');
+        return;
+      }
+
+      window.open(parsedUrl.href, '_blank', 'noopener,noreferrer');
     }
 
     function resetAll() {

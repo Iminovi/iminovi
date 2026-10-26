@@ -1,6 +1,6 @@
 # fly.toml app configuration file generated for streaming-sederhana on 2026-10-22T01:40:01Z
 #
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+# vSee https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = 'streaming-sederhana'
