@@ -84,9 +84,9 @@ def update_github_videos(title, video_url, category):
     return f"Terjadi kesalahan sistem: {str(e)}"
 
 
-# PERBAIKAN UTAMA: Menggunakan async def agar 'await' valid
+# Menggunakan 'def' biasa agar kompatibel dengan Flask standar di Vercel
 @app.route(f"/{TELEGRAM_BOT_TOKEN}", methods=["POST"])
-async def webhook():
+def webhook():
   update_json = request.get_json(force=True)
   update = Update.de_json(update_json, bot)
 
@@ -96,7 +96,7 @@ async def webhook():
     user_name = update.message.from_user.first_name
 
     if "|" not in text_pesan:
-      await bot.send_message(
+      bot.send_message(
           chat_id=chat_id,
           text=(
               "Format salah! Gunakan format:\n`Judul Video | Link Doodstream |"
@@ -111,7 +111,7 @@ async def webhook():
     video_url = parts[1]
     category = parts[2] if len(parts) > 2 else "Umum"
 
-    await bot.send_message(
+    bot.send_message(
         chat_id=chat_id,
         text=(
             f"Halo {user_name}, memproses '{title.strip()}' kategori"
@@ -120,7 +120,7 @@ async def webhook():
     )
 
     hasil = update_github_videos(title, video_url, category)
-    await bot.send_message(chat_id=chat_id, text=hasil)
+    bot.send_message(chat_id=chat_id, text=hasil)
 
   return "OK", 200
 
